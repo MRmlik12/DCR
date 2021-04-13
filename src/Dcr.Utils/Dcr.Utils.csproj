@@ -23,6 +23,16 @@
       <None Update="x64\libtesseract41.so">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="x86\libleptonica-1.80.0.so">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="x86\libtesseract41.so">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="x86" />
     </ItemGroup>
 
 </Project>
