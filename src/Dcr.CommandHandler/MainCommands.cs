@@ -12,11 +12,13 @@ namespace Dcr.CommandHandler
     {
         private readonly DiscordSocketClient _client;
         private readonly Ocr _ocr;
+        private readonly WebClient _webClient;
 
         public MainCommands(DiscordSocketClient client)
         {
             _client = client;
             _ocr = new Ocr();
+            _webClient = new WebClient();
         }
         
         [Command("ping")]
@@ -36,7 +38,7 @@ namespace Dcr.CommandHandler
                 return;
             }
             
-            var downloadedData = new WebClient().DownloadData(Context.Message.Attachments.ElementAt(0).Url);
+            var downloadedData = _webClient.DownloadData(Context.Message.Attachments.ElementAt(0).Url);
             var text = _ocr.GetText(downloadedData);
             await Context.Channel.SendMessageAsync($"```{text}```");
         }

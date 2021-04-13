@@ -39,7 +39,7 @@ namespace Dcr.Services
 
             int argPos = 0;
             
-            if (!(message.HasCharPrefix(Convert.ToChar(_configuration.Prefix), ref argPos) || 
+            if (!(message.HasCharPrefix(Convert.ToChar(Environment.GetEnvironmentVariable("PREFIX") ?? _configuration.Prefix), ref argPos) || 
                   message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;

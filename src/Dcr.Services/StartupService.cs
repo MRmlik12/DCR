@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Dcr.Config;
 using Discord;
@@ -18,7 +19,7 @@ namespace Dcr.Services
 
         public async Task Initialize()
         {
-            await _client.LoginAsync(TokenType.Bot, _configuration.DiscordToken);
+            await _client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DISCORD_TOKEN") ?? _configuration.DiscordToken);
             await _client.StartAsync();
 
             await Task.Delay(-1);
