@@ -13,10 +13,10 @@ jobs:
           dotnet-version: 5.0.x
       - name: Install dependencies
         run: dotnet restore src/Dcr.sln
-      - name: Test project
-        run: dotnet test src/Dcr.sln
       - name: Build project
         run: dotnet build src/Dcr.sln --configuration Release --no-restore 
+      - name: Test project
+        run: dotnet test src/Dcr.sln
       - name: Clean Project
         run: dotnet clean src/Dcr.sln
       - name: Add source code to Github Releases
