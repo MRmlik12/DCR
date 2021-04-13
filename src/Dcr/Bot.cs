@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Dcr
 {
-    public sealed class Bot
+    public class Bot
     {
         public async Task Run()
         {
@@ -21,7 +21,7 @@ namespace Dcr
             await provider.GetRequiredService<StartupService>().Initialize();
         }
 
-        private IConfiguration GetConfiguration => new ConfigurationBuilder<IConfiguration>()
+        public IConfiguration GetConfiguration => new ConfigurationBuilder<IConfiguration>()
             .UseJsonConfig()
             .UseJsonFile("configuration.json")
             .Build();

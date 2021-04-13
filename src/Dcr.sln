@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dcr.CommandHandler", "Dcr.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dcr.Utils", "Dcr.Utils\Dcr.Utils.csproj", "{300D70AE-6705-4415-8544-9CCFFBB792F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dcr.Tests", "Dcr.Tests\Dcr.Tests.csproj", "{6548268B-91E2-48E3-9D00-22F32AD3DDB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{300D70AE-6705-4415-8544-9CCFFBB792F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{300D70AE-6705-4415-8544-9CCFFBB792F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{300D70AE-6705-4415-8544-9CCFFBB792F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6548268B-91E2-48E3-9D00-22F32AD3DDB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6548268B-91E2-48E3-9D00-22F32AD3DDB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6548268B-91E2-48E3-9D00-22F32AD3DDB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6548268B-91E2-48E3-9D00-22F32AD3DDB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

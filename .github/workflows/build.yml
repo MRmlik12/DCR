@@ -1,0 +1,27 @@
+name: Build & publish
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Install dependencies
+        run: dotnet restore src/Dcr.sln
+      - name: Test project
+        run: dotnet test src/Dcr.sln
+      - name: Build project
+        run: dotnet build src/Dcr.sln --configuration Release --no-restore 
+      - name: Clean Project
+        run: dotnet clean src/Dcr.sln
+      - name: Add source code to Github Releases
+        uses: elgohr/Github-Release-Action@master
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            args: ${{ github.ref }}
