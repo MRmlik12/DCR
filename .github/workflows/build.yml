@@ -4,7 +4,7 @@ on:
     branches: [ main ]
 jobs:
   build:
-    runs-on: windows-2016
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET SDK
@@ -14,7 +14,7 @@ jobs:
       - name: Install dependencies
         run: dotnet restore src/Dcr.sln
       - name: Build project
-        run: dotnet build src/Dcr.sln --configuration Release --no-restore 
+        run: dotnet build src/Dcr.sln --configuration Release
       - name: Test project
         run: dotnet test src/Dcr.sln
       - name: Clean Project
