@@ -21,7 +21,7 @@ jobs:
         run: dotnet clean src/Dcr.sln
       - name: Add source code to Github Releases
         uses: elgohr/Github-Release-Action@master
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            args: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: ${{ github.ref }}
