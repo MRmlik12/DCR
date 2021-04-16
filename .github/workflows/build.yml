@@ -1,7 +1,7 @@
 name: Build & publish
 on:
   push:
-    branches: [ main, feature/first-launch ]
+    branches: [ main ]
 jobs:
   build:
     runs-on: windows-latest
@@ -19,9 +19,3 @@ jobs:
         run: dotnet test src/Dcr.sln
       - name: Clean Project
         run: dotnet clean src/Dcr.sln
-      - name: Add source code to Github Releases
-        uses: elgohr/Github-Release-Action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: ${{ github.ref }}
