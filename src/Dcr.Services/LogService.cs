@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Serilog;
+using Serilog.Exceptions;
 
 namespace Dcr.Services
 {
@@ -18,6 +19,7 @@ namespace Dcr.Services
         public void Initialize()
         {
             Log.Logger = new LoggerConfiguration()
+                .Enrich.WithExceptionDetails()
                 .WriteTo.Console()
                 .WriteTo.File($"{DateTime.Now:yy-MM-dd}.txt")
                 .CreateLogger();
