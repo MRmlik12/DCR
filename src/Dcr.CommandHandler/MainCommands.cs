@@ -1,8 +1,10 @@
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Dcr.Utils;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
@@ -13,6 +15,7 @@ namespace Dcr.CommandHandler
         private readonly DiscordSocketClient _client;
         private readonly Ocr _ocr;
         private readonly WebClient _webClient;
+        private const string GithubUrl = "https://github.com/MRmlik12/DCR";
 
         public MainCommands(DiscordSocketClient client)
         {
@@ -37,10 +40,27 @@ namespace Dcr.CommandHandler
                     $"{Context.Message.Author.Mention} This message isn't contain image!");
                 return;
             }
-            
+
             var downloadedData = _webClient.DownloadData(Context.Message.Attachments.ElementAt(0).Url);
             var text = _ocr.GetText(downloadedData);
             await Context.Channel.SendMessageAsync($"```{text}```");
+        }
+
+        [Command("help")]
+        public async Task Help()
+            => await Context.Channel.SendMessageAsync($"{GithubUrl}/blob/main/README.md");
+
+        [Command("about")]
+        public async Task About()
+        {
+            var builder = new EmbedBuilder()
+                .WithTitle("About")
+                .AddField("Version", typeof(Ocr).Assembly.GetName().Version)
+                .AddField("Author", "MRmlik12")
+                .AddField("Github", GithubUrl)
+                .WithFooter($"Requested Date: {DateTime.UtcNow}")
+                .Build();
+            await Context.Channel.SendMessageAsync(embed: builder);
         }
     }
 }
