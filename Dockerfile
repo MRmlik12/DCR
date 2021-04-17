@@ -22,4 +22,6 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/liblept.so.5 x64/libleptonica-1.80.0.so
 ENV DISCORD_TOKEN TOKEN
 ENV PREFIX !
 
+EXPOSE 5000
+
 ENTRYPOINT [ "dotnet", "Dcr.dll" ]
