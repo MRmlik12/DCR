@@ -19,17 +19,3 @@ jobs:
         run: dotnet test src/Dcr.sln
       - name: Clean Project
         run: dotnet clean src/Dcr.sln
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build, Push and Deploy to Heroku
-        id: heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with: 
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          usedocker: true
-          procfile: "worker: dotnet Dcr.dll"
