@@ -1,5 +1,5 @@
 build:
   docker:
-    worker: worker/Dockerfile
-release:
-  image: worker
+    worker: Dockerfile
+run:
+  worker: dotnet Dcr.dll
