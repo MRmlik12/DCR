@@ -29,12 +29,12 @@ namespace Dcr
         private IServiceProvider GetServices() => new ServiceCollection()
             .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {
-                LogLevel = LogSeverity.Verbose,
+                LogLevel = LogSeverity.Error,
                 MessageCacheSize = 1000
             }))
             .AddSingleton(new CommandService(new CommandServiceConfig
             {
-                LogLevel = LogSeverity.Verbose,
+                LogLevel = LogSeverity.Error,
             }))
             .AddSingleton<StartupService>()
             .AddSingleton<CommandHandlerService>()
