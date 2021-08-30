@@ -1,7 +1,10 @@
 name: Test project
-on: [ pull_request ]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
 jobs:
-  build:
+  test:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2

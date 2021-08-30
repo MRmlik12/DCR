@@ -1,21 +1,22 @@
-name: Build & deploy
+name: Build & deploy Docker image
 on:
   push:
     branches: [ main ]
+  pull_request:
 jobs:
   build:
-    runs-on: windows-latest
+    needs: test
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v1
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
         with:
-          dotnet-version: 5.0.x
-      - name: Install dependencies
-        run: dotnet restore src/Dcr.sln
-      - name: Build project
-        run: dotnet build src/Dcr.sln --configuration Release
-      - name: Test project
-        run: dotnet test src/Dcr.sln
-      - name: Clean Project
-        run: dotnet clean src/Dcr.sln
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build & Publish docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: mrmlik12/dcr:latest
