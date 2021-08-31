@@ -16,5 +16,3 @@ jobs:
         run: dotnet restore src/Dcr.sln
       - name: Test project
         run: dotnet test src/Dcr.sln
-      - name: Build project
-        run: dotnet build src/Dcr.sln --configuration Release --no-restore 
