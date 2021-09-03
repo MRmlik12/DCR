@@ -1,9 +1,9 @@
-name: Build & deploy
+name: Test, Build & deploy Docker image
 on:
   push:
     branches: [ main ]
 jobs:
-  build:
+  test:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,9 +13,26 @@ jobs:
           dotnet-version: 5.0.x
       - name: Install dependencies
         run: dotnet restore src/Dcr.sln
-      - name: Build project
-        run: dotnet build src/Dcr.sln --configuration Release
       - name: Test project
         run: dotnet test src/Dcr.sln
-      - name: Clean Project
-        run: dotnet clean src/Dcr.sln
+  build-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build & Publish docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: mrmlik12/dcr:latest
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

@@ -1,7 +1,8 @@
 name: Test project
-on: [ pull_request ]
+on:
+  pull_request:
 jobs:
-  build:
+  test:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,5 +14,3 @@ jobs:
         run: dotnet restore src/Dcr.sln
       - name: Test project
         run: dotnet test src/Dcr.sln
-      - name: Build project
-        run: dotnet build src/Dcr.sln --configuration Release --no-restore 
