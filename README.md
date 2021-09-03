@@ -1,5 +1,6 @@
 # DCR 
-![example workflow](https://github.com/MRmlik12/DCR/actions/workflows/build.yml/badge.svg)
+[![Test, Build & deploy Docker image](https://github.com/MRmlik12/DCR/actions/workflows/build.yml/badge.svg)](https://github.com/MRmlik12/DCR/actions/workflows/build.yml)
+[![Docker pulls](https://img.shields.io/docker/pulls/mrmlik12/dcr.svg)](https://hub.docker.com/r/mrmlik12/dcr)
 
 Discord bot for reading texts from images
 
