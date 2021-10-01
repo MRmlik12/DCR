@@ -29,9 +29,16 @@
       <None Update="Images\texttoread.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="AssetsToTest\temp.zip">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <None Update="AssetsToTest\texttoread.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="AssetsToTest\temp.zip" />
+      <AdditionalFiles Include="AssetsToTest\temp.zip">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </AdditionalFiles>
     </ItemGroup>
 
 </Project>

@@ -8,7 +8,12 @@ namespace Dcr.Utils
     public class DownloadTesseractTrainedData
     {
         private const string TessDataUrl = "https://github.com/tesseract-ocr/tessdata/archive/refs/heads/main.zip";
-        private const string FileName = "temp.zip";
+        private readonly string _fileName;
+
+        public DownloadTesseractTrainedData(string tempPath = "temp.zip")
+        {
+            _fileName = tempPath;
+        }
 
         public void Start()
         {
@@ -22,6 +27,7 @@ namespace Dcr.Utils
                 ExtractData();
                 RenameToTessdata();
                 DeleteTempFile();
+                return;
             }
             
             DownloadFile();
@@ -33,29 +39,29 @@ namespace Dcr.Utils
         }
 
         private bool CheckIfTempExists() 
-            => File.Exists(FileName);
+            => File.Exists(_fileName);
 
         private bool CheckIfTessDataDirExists()
-            => Directory.Exists(TessDataUrl);
+            => Directory.Exists("tessdata-extended");
 
         private void RenameToTessdata()
-            => Directory.Move("tessdata-main", "tessdata");
+            => Directory.Move("tessdata-main", "tessdata-extended");
 
         private void DownloadFile()
         {
             Log.Information("Downloading tessdata...");
             var webClient = new WebClient();
-            webClient.DownloadFile(TessDataUrl, FileName);
+            webClient.DownloadFile(TessDataUrl, _fileName);
         }
 
         private void DeleteTempFile()
-            => File.Delete(FileName);
+            => File.Delete(_fileName);
 
         private void ExtractData()
         {
             Log.Information("Extracting tessdata");
             
-            using ZipFile zip = ZipFile.Read(FileName);
+            using ZipFile zip = ZipFile.Read(_fileName);
             zip.ExtractAll("./");
         }
     }

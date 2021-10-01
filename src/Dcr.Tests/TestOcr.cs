@@ -13,7 +13,7 @@ namespace Dcr.Tests
         public void Check_image_text()
         {
             var ocr = new Ocr();
-            var imageBytes = File.ReadAllBytes("Images/texttoread.png");
+            var imageBytes = File.ReadAllBytes("AssetsToTest/texttoread.png");
             string text = ocr.GetText(imageBytes);
             Assert.Equal(ExpectedText, text);
         }
