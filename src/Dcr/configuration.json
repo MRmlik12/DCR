@@ -1,4 +1,5 @@
 {
   "DiscordToken": "TOKEN",
+  "InstallTesseractData": true,
   "Prefix": "!"
 }
