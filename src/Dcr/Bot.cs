@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Config.Net;
 using Dcr.Config;
 using Dcr.Services;
+using Dcr.Utils;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -16,9 +17,17 @@ namespace Dcr
         {
             var provider = GetServices();
             
+            InstallTessData(provider.GetRequiredService<IConfiguration>().InstallTesseractData);
+            
             provider.GetRequiredService<LogService>().Initialize();
             await provider.GetRequiredService<CommandHandlerService>().Initialize();
             await provider.GetRequiredService<StartupService>().Initialize();
+        }
+
+        public void InstallTessData(bool installTesseractData)
+        {
+            if (installTesseractData)
+                new DownloadTesseractTrainedData().Start();
         }
 
         public IConfiguration GetConfiguration => new ConfigurationBuilder<IConfiguration>()
