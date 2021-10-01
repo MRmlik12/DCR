@@ -30,15 +30,21 @@ namespace Dcr.CommandHandler
 
         [Command("read")]
         [Description("Reads text from image and returns all colleted data")]
-        public async Task Read()
+        public async Task Read([Remainder] string url = null)
         {
+            if (!string.IsNullOrEmpty(url))
+            {
+                await Context.Channel.SendMessageAsync($"```{GetTextFromImage(url)}```");
+                return;
+            }
+            
             if (Context.Message.Attachments.Count == 0)
             {
                 await Context.Channel.SendMessageAsync(
                     $"{Context.Message.Author.Mention} This message isn't contain image!");
                 return;
             }
-
+            
             var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url).Result;
             await Context.Channel.SendMessageAsync($"```{text}```");
         }
