@@ -66,6 +66,25 @@ namespace Dcr.CommandHandler
             var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url).Result;
             await Context.Channel.SendMessageAsync($"```{text}```");
         }
+        
+        [Command("languages")]
+        [Description("Returns all languages supported to read text")]
+        public async Task Languages()
+        {
+            if (_tessdataPath.Equals("tessdata"))
+            {
+                await Context.Channel.SendMessageAsync("eng - English");
+                return;
+            }
+
+            var languages = await new TessDataLanguages().GetTessDataLanguages();
+            var languagesString = languages.Aggregate("",
+                (current, tessLanguage) => current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n");
+
+            await Context.Channel.SendMessageAsync("```" +
+                languages.Aggregate("", (current, tessLanguage) => current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n") +
+                "```");
+        }
 
         [Command("help")]
         public async Task Help()
