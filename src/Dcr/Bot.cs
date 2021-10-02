@@ -43,7 +43,7 @@ namespace Dcr
             }))
             .AddSingleton(new CommandService(new CommandServiceConfig
             {
-                LogLevel = LogSeverity.Error,
+                LogLevel = LogSeverity.Error
             }))
             .AddSingleton<StartupService>()
             .AddSingleton<CommandHandlerService>()

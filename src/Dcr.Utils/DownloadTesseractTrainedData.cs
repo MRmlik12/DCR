@@ -38,7 +38,7 @@ namespace Dcr.Utils
             Log.Information("Tessdata was installed successfully");
         }
 
-        private bool CheckIfTempExists() 
+        private bool CheckIfTempExists()
             => File.Exists(_fileName);
 
         private bool CheckIfTessDataDirExists()
