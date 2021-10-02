@@ -1,35 +1,29 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Serilog;
-using Serilog.Exceptions;
 
 namespace Dcr.Services
 {
     public class LogService
     {
         private readonly DiscordSocketClient _client;
+        private readonly ILogger _logger;
         
-        public LogService(DiscordSocketClient client)
+        public LogService(DiscordSocketClient client, ILogger logger)
         {
             _client = client;
+            _logger = logger;
         }
 
         public void Initialize()
         {
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.WithExceptionDetails()
-                .WriteTo.Console()
-                .WriteTo.File($"{DateTime.Now:yy-MM-dd}.txt")
-                .CreateLogger();
-            
-            _client.Log += LogMesage;
+            _client.Log += LogMessage;
         }
 
-        private Task LogMesage(LogMessage arg)
+        private Task LogMessage(LogMessage arg)
         {
-            Log.Information(arg.Message);
+            _logger.Information(arg.Message);
             return Task.CompletedTask;
         }
     }

@@ -14,7 +14,7 @@ namespace Dcr.Tests
         {
             var ocr = new Ocr();
             var imageBytes = File.ReadAllBytes("AssetsToTest/texttoread.png");
-            string text = ocr.GetText(imageBytes, "eng");
+            var text = ocr.GetText(imageBytes, "eng");
             Assert.Equal(ExpectedText, text);
         }
     }

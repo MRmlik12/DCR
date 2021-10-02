@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Dcr
+﻿namespace Dcr
 {
     static class Program
     {

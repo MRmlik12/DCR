@@ -34,10 +34,9 @@ namespace Dcr.Services
         //See: https://docs.stillu.cc/guides/commands/intro.html
         private async Task HandleCommands(SocketMessage arg)
         {
-            var message = arg as SocketUserMessage;
-            if (message == null) return;
+            if (arg is not SocketUserMessage message) return;
 
-            int argPos = 0;
+            var argPos = 0;
             
             if (!(message.HasCharPrefix(Convert.ToChar(Environment.GetEnvironmentVariable("PREFIX") ?? _configuration.Prefix), ref argPos) || 
                   message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||

@@ -100,6 +100,7 @@ namespace Dcr.CommandHandler
                 .AddField("Github", GithubUrl)
                 .WithFooter($"Requested Date: {DateTime.UtcNow}")
                 .Build();
+            
             await Context.Channel.SendMessageAsync(embed: builder);
         }
 
