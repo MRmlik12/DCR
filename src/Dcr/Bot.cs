@@ -8,6 +8,8 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Exceptions;
 
 namespace Dcr
 {
@@ -16,17 +18,17 @@ namespace Dcr
         public async Task Run()
         {
             var provider = GetServices();
-            
-            InstallTessData(provider.GetRequiredService<IConfiguration>().InstallTesseractData);
-            
+
+            InstallTessData(Environment.GetEnvironmentVariable("INSTALL_TESSDATA") ?? provider.GetRequiredService<IConfiguration>().InstallTesseractData);
+
             provider.GetRequiredService<LogService>().Initialize();
             await provider.GetRequiredService<CommandHandlerService>().Initialize();
             await provider.GetRequiredService<StartupService>().Initialize();
         }
 
-        public void InstallTessData(bool installTesseractData)
-        {
-            if (installTesseractData)
+        private void InstallTessData(string installTesseractData)
+        { 
+            if (bool.Parse(installTesseractData))
                 new DownloadTesseractTrainedData().Start();
         }
 
@@ -35,7 +37,15 @@ namespace Dcr
             .UseJsonFile("configuration.json")
             .Build();
         
+        private static ILogger AddLogger()
+            => new LoggerConfiguration()
+                .Enrich.WithExceptionDetails()
+                .WriteTo.Console()
+                .WriteTo.File($"{DateTime.Now:yy-MM-dd}.txt")
+                .CreateLogger();
+        
         private IServiceProvider GetServices() => new ServiceCollection()
+            .AddSingleton(AddLogger())
             .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Error,
