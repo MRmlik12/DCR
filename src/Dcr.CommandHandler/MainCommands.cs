@@ -35,12 +35,22 @@ namespace Dcr.CommandHandler
         [Description("Reads text from image and returns all colleted data")]
         public async Task Read([Remainder]ReadArguments readArguments)
         {
+            if (!string.IsNullOrEmpty(readArguments.File))
+            {
+                await SendTextFile(readArguments.File,
+                    Context.Message.Attachments.Count != 0,
+                        string.IsNullOrEmpty(readArguments.Lang) ? "eng" : readArguments.Lang,
+                        readArguments.Url
+                    );
+                return;
+            }
+            
             if (!string.IsNullOrEmpty(readArguments.Url))
             {
                 await Context.Channel.SendMessageAsync($"```{GetTextFromImage(readArguments.Url, readArguments.Lang)}```");
                 return;
             }
-            
+
             if (Context.Message.Attachments.Count == 0)
             {
                 await Context.Channel.SendMessageAsync(
@@ -78,8 +88,6 @@ namespace Dcr.CommandHandler
             }
 
             var languages = await new TessDataLanguages().GetTessDataLanguages();
-            var languagesString = languages.Aggregate("",
-                (current, tessLanguage) => current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n");
 
             await Context.Channel.SendMessageAsync("```" +
                 languages.Aggregate("", (current, tessLanguage) => current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n") +
@@ -109,6 +117,14 @@ namespace Dcr.CommandHandler
             var downloadedData = await _webClient.DownloadDataTaskAsync(imageUrl);
             var text = _ocr.GetText(downloadedData, lang, _tessdataPath);
             return text;
+        }
+
+        private async Task SendTextFile(string filename, bool isAttachment, string lang, string url)
+        {
+            var stream = ReadTextMemoryStream.GetReadTextMemoryStream(isAttachment ? 
+                GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, lang).Result : GetTextFromImage(url, lang).Result);
+            await Context.Channel.SendFileAsync(stream, $"{filename}.txt");
+            await stream.DisposeAsync();
         }
 
         private string GetTesseractDataPath()
