@@ -37,9 +37,11 @@ namespace Dcr.CommandHandler
         {
             if (!string.IsNullOrEmpty(readArguments.File))
             {
-                var stream = ReadTextMemoryStream.GetReadTextMemoryStream(GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, readArguments.Lang).Result);
-                await Context.Channel.SendFileAsync(stream, $"{readArguments.File}");
-                await stream.DisposeAsync();
+                await SendTextFile(readArguments.File,
+                    Context.Message.Attachments.Count != 0,
+                        string.IsNullOrEmpty(readArguments.Lang) ? "eng" : readArguments.Lang,
+                        readArguments.Url
+                    );
                 return;
             }
             
@@ -115,6 +117,14 @@ namespace Dcr.CommandHandler
             var downloadedData = await _webClient.DownloadDataTaskAsync(imageUrl);
             var text = _ocr.GetText(downloadedData, lang, _tessdataPath);
             return text;
+        }
+
+        private async Task SendTextFile(string filename, bool isAttachment, string lang, string url)
+        {
+            var stream = ReadTextMemoryStream.GetReadTextMemoryStream(isAttachment ? 
+                GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, lang).Result : GetTextFromImage(url, lang).Result);
+            await Context.Channel.SendFileAsync(stream, $"{filename}.txt");
+            await stream.DisposeAsync();
         }
 
         private string GetTesseractDataPath()
