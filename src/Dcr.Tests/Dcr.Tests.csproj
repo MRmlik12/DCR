@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
-        <PackageReference Include="Tesseract.Data.English" Version="4.0.0" />
-        <PackageReference Include="xunit" Version="2.4.2" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2"/>
+        <PackageReference Include="Tesseract.Data.English" Version="4.0.0"/>
+        <PackageReference Include="xunit" Version="2.4.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
@@ -21,24 +21,24 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dcr.Utils\Dcr.Utils.csproj" />
-      <ProjectReference Include="..\Dcr\Dcr.csproj" />
+        <ProjectReference Include="..\Dcr.Utils\Dcr.Utils.csproj"/>
+        <ProjectReference Include="..\Dcr\Dcr.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Images\texttoread.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="AssetsToTest\texttoread.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="Images\texttoread.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="AssetsToTest\texttoread.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="AssetsToTest\temp.zip" />
-      <AdditionalFiles Include="AssetsToTest\temp.zip">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </AdditionalFiles>
+        <None Remove="AssetsToTest\temp.zip"/>
+        <AdditionalFiles Include="AssetsToTest\temp.zip">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </AdditionalFiles>
     </ItemGroup>
 
 </Project>

@@ -10,14 +10,14 @@ namespace Dcr.Utils;
 public class TessDataLanguages
 {
     private const string WebsiteUrl = "https://tesseract-ocr.github.io/tessdoc/Data-Files";
-    private IDocument _document;
     private readonly List<TesseractDataLanguage> _tesseractDataLanguages;
+    private IDocument _document;
 
     public TessDataLanguages()
     {
         _tesseractDataLanguages = new List<TesseractDataLanguage>();
     }
-        
+
     public async Task<List<TesseractDataLanguage>> GetTessDataLanguages()
     {
         await Initialize();
@@ -31,7 +31,7 @@ public class TessDataLanguages
         var context = BrowsingContext.New(config);
         _document = await context.OpenAsync(WebsiteUrl);
     }
-        
+
     private void ScrapContent()
     {
         var timetable = (IHtmlTableElement)_document.GetElementsByTagName("table")[2];
@@ -39,9 +39,9 @@ public class TessDataLanguages
         {
             if (row.Index.Equals(0))
                 continue;
-                
+
             _tesseractDataLanguages.Add(new TesseractDataLanguage
-            { 
+            {
                 LangCode = row.Cells[0].TextContent,
                 Lang = row.Cells[1].TextContent
             });

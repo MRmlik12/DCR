@@ -1,10 +1,10 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Dcr.CommandHandler;
 using Dcr.Config;
 using Discord.Commands;
 using Discord.WebSocket;
-using Dcr.CommandHandler;
 
 namespace Dcr.Services;
 
@@ -12,10 +12,11 @@ public class CommandHandlerService
 {
     private readonly DiscordSocketClient _client;
     private readonly CommandService _commands;
-    private readonly IServiceProvider _provider;
     private readonly IConfiguration _configuration;
-        
-    public CommandHandlerService(DiscordSocketClient client, CommandService commands, IServiceProvider provider, IConfiguration configuration)
+    private readonly IServiceProvider _provider;
+
+    public CommandHandlerService(DiscordSocketClient client, CommandService commands, IServiceProvider provider,
+        IConfiguration configuration)
     {
         _client = client;
         _commands = commands;
@@ -26,9 +27,9 @@ public class CommandHandlerService
     public async Task Initialize()
     {
         _client.MessageReceived += HandleCommands;
-            
-        await _commands.AddModulesAsync(assembly: Assembly.GetAssembly(typeof(MainCommands)), 
-            services: _provider);
+
+        await _commands.AddModulesAsync(Assembly.GetAssembly(typeof(MainCommands)),
+            _provider);
     }
 
     //See: https://docs.stillu.cc/guides/commands/intro.html
@@ -37,17 +38,18 @@ public class CommandHandlerService
         if (arg is not SocketUserMessage message) return;
 
         var argPos = 0;
-            
-        if (!(message.HasCharPrefix(Convert.ToChar(Environment.GetEnvironmentVariable("PREFIX") ?? _configuration.Prefix), ref argPos) || 
+
+        if (!(message.HasCharPrefix(
+                  Convert.ToChar(Environment.GetEnvironmentVariable("PREFIX") ?? _configuration.Prefix), ref argPos) ||
               message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
             message.Author.IsBot)
             return;
-            
+
         var context = new SocketCommandContext(_client, message);
-            
+
         await _commands.ExecuteAsync(
-            context: context, 
-            argPos: argPos,
-            services: _provider);
+            context,
+            argPos,
+            _provider);
     }
 }

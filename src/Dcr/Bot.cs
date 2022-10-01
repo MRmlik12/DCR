@@ -15,11 +15,16 @@ namespace Dcr;
 
 public class Bot
 {
+    public static IConfiguration GetConfiguration => new ConfigurationBuilder<IConfiguration>()
+        .UseJsonFile("configuration.json")
+        .Build();
+
     public static async Task Run()
     {
         var provider = GetServices();
 
-        InstallTessData(Environment.GetEnvironmentVariable("INSTALL_TESSDATA") ?? provider.GetRequiredService<IConfiguration>().InstallTesseractData);
+        InstallTessData(Environment.GetEnvironmentVariable("INSTALL_TESSDATA") ??
+                        provider.GetRequiredService<IConfiguration>().InstallTesseractData);
 
         provider.GetRequiredService<LogService>().Initialize();
         await provider.GetRequiredService<CommandHandlerService>().Initialize();
@@ -27,36 +32,37 @@ public class Bot
     }
 
     private static void InstallTessData(string installTesseractData)
-    { 
+    {
         if (bool.Parse(installTesseractData))
             new DownloadTesseractTrainedData().Start();
     }
 
-    public static IConfiguration GetConfiguration => new ConfigurationBuilder<IConfiguration>()
-        .UseJsonFile("configuration.json")
-        .Build();
-        
     private static ILogger AddLogger()
-        => new LoggerConfiguration()
+    {
+        return new LoggerConfiguration()
             .Enrich.WithExceptionDetails()
             .WriteTo.Console()
             .WriteTo.File($"{DateTime.Now:yy-MM-dd}.txt")
             .CreateLogger();
-        
-    private static IServiceProvider GetServices() => new ServiceCollection()
-        .AddSingleton(AddLogger())
-        .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
-        {
-            LogLevel = LogSeverity.Error,
-            MessageCacheSize = 1000
-        }))
-        .AddSingleton(new CommandService(new CommandServiceConfig
-        {
-            LogLevel = LogSeverity.Error
-        }))
-        .AddSingleton<StartupService>()
-        .AddSingleton<CommandHandlerService>()
-        .AddSingleton<LogService>()
-        .AddSingleton(GetConfiguration)
-        .BuildServiceProvider();
+    }
+
+    private static IServiceProvider GetServices()
+    {
+        return new ServiceCollection()
+            .AddSingleton(AddLogger())
+            .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+            {
+                LogLevel = LogSeverity.Error,
+                MessageCacheSize = 1000
+            }))
+            .AddSingleton(new CommandService(new CommandServiceConfig
+            {
+                LogLevel = LogSeverity.Error
+            }))
+            .AddSingleton<StartupService>()
+            .AddSingleton<CommandHandlerService>()
+            .AddSingleton<LogService>()
+            .AddSingleton(GetConfiguration)
+            .BuildServiceProvider();
+    }
 }

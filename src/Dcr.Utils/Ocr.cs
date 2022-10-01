@@ -9,7 +9,7 @@ public class Ocr
         using var engine = new TesseractEngine(tessdataPath, lang, EngineMode.Default);
         using var img = Pix.LoadFromMemory(imageData);
         using var page = engine.Process(img);
-            
+
         return page.GetText();
     }
 }

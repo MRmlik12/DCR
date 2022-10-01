@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Dcr.CommandHandler.Arguments;
 using Dcr.Utils;
@@ -14,29 +13,29 @@ namespace Dcr.CommandHandler;
 
 public class MainCommands : ModuleBase<SocketCommandContext>
 {
-    private readonly Ocr _ocr;
-    private readonly WebClient _webClient;
-    private readonly string _tessdataPath;
     private const string GithubUrl = "https://github.com/MRmlik12/DCR";
+    private readonly string _tessdataPath;
+    private readonly WebClient _webClient;
 
     public MainCommands()
     {
-        _ocr = new Ocr();
 #pragma warning disable SYSLIB0014
         _webClient = new WebClient();
 #pragma warning restore SYSLIB0014
         _tessdataPath = GetTesseractDataPath();
     }
-        
+
     [Command("ping")]
     [Description("Checks bot response time!")]
     public async Task Ping()
-        => await Context.Channel.SendMessageAsync($"{Context.Message.Author.Mention} " +
-                                                  $" :ping_pong: Pong in {Context.Client.Latency.ToString()}ms!");
+    {
+        await Context.Channel.SendMessageAsync($"{Context.Message.Author.Mention} " +
+                                               $" :ping_pong: Pong in {Context.Client.Latency.ToString()}ms!");
+    }
 
     [Command("read")]
     [Description("Reads text from image and returns all colleted data")]
-    public async Task Read([Remainder]ReadArguments readArguments)
+    public async Task Read([Remainder] ReadArguments readArguments)
     {
         if (!string.IsNullOrEmpty(readArguments.File))
         {
@@ -47,7 +46,7 @@ public class MainCommands : ModuleBase<SocketCommandContext>
             );
             return;
         }
-            
+
         if (!string.IsNullOrEmpty(readArguments.Url))
         {
             await Context.Channel.SendMessageAsync($"```{GetTextFromImage(readArguments.Url, readArguments.Lang)}```");
@@ -60,11 +59,11 @@ public class MainCommands : ModuleBase<SocketCommandContext>
                 $"{Context.Message.Author.Mention} This message isn't contain image!");
             return;
         }
-            
+
         var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, readArguments.Lang).Result;
         await Context.Channel.SendMessageAsync($"```{text}```");
     }
-        
+
     [Command("read")]
     [Description("Reads text from image and returns all colleted data")]
     public async Task Read()
@@ -75,11 +74,11 @@ public class MainCommands : ModuleBase<SocketCommandContext>
                 $"{Context.Message.Author.Mention} This message isn't contain image!");
             return;
         }
-            
+
         var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url).Result;
         await Context.Channel.SendMessageAsync($"```{text}```");
     }
-        
+
     [Command("languages")]
     [Description("Returns all languages supported to read text")]
     public async Task Languages()
@@ -93,13 +92,17 @@ public class MainCommands : ModuleBase<SocketCommandContext>
         var languages = await new TessDataLanguages().GetTessDataLanguages();
 
         await Context.Channel.SendMessageAsync("```" +
-                                               languages.Aggregate("", (current, tessLanguage) => current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n") +
+                                               languages.Aggregate("",
+                                                   (current, tessLanguage) =>
+                                                       current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n") +
                                                "```");
     }
 
     [Command("help")]
     public async Task Help()
-        => await Context.Channel.SendMessageAsync($"{GithubUrl}/blob/main/README.md");
+    {
+        await Context.Channel.SendMessageAsync($"{GithubUrl}/blob/main/README.md");
+    }
 
     [Command("about")]
     public async Task About()
@@ -111,7 +114,7 @@ public class MainCommands : ModuleBase<SocketCommandContext>
             .AddField("Github", GithubUrl)
             .WithFooter($"Requested Date: {DateTime.UtcNow}")
             .Build();
-            
+
         await Context.Channel.SendMessageAsync(embed: builder);
     }
 
@@ -124,12 +127,15 @@ public class MainCommands : ModuleBase<SocketCommandContext>
 
     private async Task SendTextFile(string filename, bool isAttachment, string lang, string url)
     {
-        var stream = ReadTextMemoryStream.GetReadTextMemoryStream(isAttachment ? 
-            GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, lang).Result : GetTextFromImage(url, lang).Result);
+        var stream = ReadTextMemoryStream.GetReadTextMemoryStream(isAttachment
+            ? GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, lang).Result
+            : GetTextFromImage(url, lang).Result);
         await Context.Channel.SendFileAsync(stream, $"{filename}.txt");
         await stream.DisposeAsync();
     }
 
-    private string GetTesseractDataPath()
-        => Directory.Exists("tessdata-extended") ? "tessdata-extended" : "tessdata";
+    private static string GetTesseractDataPath()
+    {
+        return Directory.Exists("tessdata-extended") ? "tessdata-extended" : "tessdata";
+    }
 }

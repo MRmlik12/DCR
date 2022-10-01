@@ -4,7 +4,7 @@ public class TestConfig
 {
     private const string DiscordTokenResult = "TOKEN";
     private const string PrefixExpected = "!";
-        
+
     [Fact]
     public void Is_Properly_Parsing_Config()
     {

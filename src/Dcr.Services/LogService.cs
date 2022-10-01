@@ -9,7 +9,7 @@ public class LogService
 {
     private readonly DiscordSocketClient _client;
     private readonly ILogger _logger;
-        
+
     public LogService(DiscordSocketClient client, ILogger logger)
     {
         _client = client;

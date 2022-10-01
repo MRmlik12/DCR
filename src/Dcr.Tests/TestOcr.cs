@@ -6,7 +6,7 @@ namespace Dcr.Tests;
 public class TestOcr
 {
     private const string ExpectedText = "How to read a posted file in C# Discord.net?\n";
-        
+
     [Fact]
     public void Check_image_text()
     {

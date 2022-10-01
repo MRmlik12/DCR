@@ -18,10 +18,10 @@ public class DownloadTesseractTrainedData
     public void Start()
     {
         Log.Information("Start installing tessdata");
-            
+
         if (CheckIfTessDataDirExists())
             return;
-            
+
         if (CheckIfTempExists())
         {
             ExtractData();
@@ -29,23 +29,29 @@ public class DownloadTesseractTrainedData
             DeleteTempFile();
             return;
         }
-            
+
         DownloadFile();
         ExtractData();
         RenameToTessdata();
         DeleteTempFile();
-            
+
         Log.Information("Tessdata was installed successfully");
     }
 
     private bool CheckIfTempExists()
-        => File.Exists(_fileName);
+    {
+        return File.Exists(_fileName);
+    }
 
     private static bool CheckIfTessDataDirExists()
-        => Directory.Exists("tessdata-extended");
+    {
+        return Directory.Exists("tessdata-extended");
+    }
 
     private static void RenameToTessdata()
-        => Directory.Move("tessdata-main", "tessdata-extended");
+    {
+        Directory.Move("tessdata-main", "tessdata-extended");
+    }
 
     private void DownloadFile()
     {
@@ -55,12 +61,14 @@ public class DownloadTesseractTrainedData
     }
 
     private void DeleteTempFile()
-        => File.Delete(_fileName);
+    {
+        File.Delete(_fileName);
+    }
 
     private void ExtractData()
     {
         Log.Information("Extracting tessdata");
-            
+
         using var zip = ZipFile.Read(_fileName);
         zip.ExtractAll("./");
     }
