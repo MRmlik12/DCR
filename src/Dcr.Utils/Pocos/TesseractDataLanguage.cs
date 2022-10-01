@@ -1,8 +1,7 @@
-namespace Dcr.Utils.Pocos
+namespace Dcr.Utils.Pocos;
+
+public class TesseractDataLanguage
 {
-    public class TesseractDataLanguage
-    {
-        public string LangCode { get; set; }
-        public string Lang { get; set; }
-    }
+    public string LangCode { get; set; }
+    public string Lang { get; set; }
 }

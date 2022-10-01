@@ -9,125 +9,133 @@ using Dcr.Utils;
 using Discord;
 using Discord.Commands;
 
-namespace Dcr.CommandHandler
+namespace Dcr.CommandHandler;
+
+public class MainCommands : ModuleBase<SocketCommandContext>
 {
-    public class MainCommands : ModuleBase<SocketCommandContext>
+    private const string GithubUrl = "https://github.com/MRmlik12/DCR";
+    private readonly string _tessdataPath;
+    private readonly WebClient _webClient;
+
+    public MainCommands()
     {
-        private readonly Ocr _ocr;
-        private readonly WebClient _webClient;
-        private readonly string _tessdataPath;
-        private const string GithubUrl = "https://github.com/MRmlik12/DCR";
+#pragma warning disable SYSLIB0014
+        _webClient = new WebClient();
+#pragma warning restore SYSLIB0014
+        _tessdataPath = GetTesseractDataPath();
+    }
 
-        public MainCommands()
+    [Command("ping")]
+    [Description("Checks bot response time!")]
+    public async Task Ping()
+    {
+        await Context.Channel.SendMessageAsync($"{Context.Message.Author.Mention} " +
+                                               $" :ping_pong: Pong in {Context.Client.Latency.ToString()}ms!");
+    }
+
+    [Command("read")]
+    [Description("Reads text from image and returns all colleted data")]
+    public async Task Read([Remainder] ReadArguments readArguments)
+    {
+        if (!string.IsNullOrEmpty(readArguments.File))
         {
-            _ocr = new Ocr();
-            _webClient = new WebClient();
-            _tessdataPath = GetTesseractDataPath();
-        }
-        
-        [Command("ping")]
-        [Description("Checks bot response time!")]
-        public async Task Ping()
-            => await Context.Channel.SendMessageAsync($"{Context.Message.Author.Mention} " +
-                                                      $" :ping_pong: Pong in {Context.Client.Latency.ToString()}ms!");
-
-        [Command("read")]
-        [Description("Reads text from image and returns all colleted data")]
-        public async Task Read([Remainder]ReadArguments readArguments)
-        {
-            if (!string.IsNullOrEmpty(readArguments.File))
-            {
-                await SendTextFile(readArguments.File,
-                    Context.Message.Attachments.Count != 0,
-                        string.IsNullOrEmpty(readArguments.Lang) ? "eng" : readArguments.Lang,
-                        readArguments.Url
-                    );
-                return;
-            }
-            
-            if (!string.IsNullOrEmpty(readArguments.Url))
-            {
-                await Context.Channel.SendMessageAsync($"```{GetTextFromImage(readArguments.Url, readArguments.Lang)}```");
-                return;
-            }
-
-            if (Context.Message.Attachments.Count == 0)
-            {
-                await Context.Channel.SendMessageAsync(
-                    $"{Context.Message.Author.Mention} This message isn't contain image!");
-                return;
-            }
-            
-            var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, readArguments.Lang).Result;
-            await Context.Channel.SendMessageAsync($"```{text}```");
-        }
-        
-        [Command("read")]
-        [Description("Reads text from image and returns all colleted data")]
-        public async Task Read()
-        {
-            if (Context.Message.Attachments.Count == 0)
-            {
-                await Context.Channel.SendMessageAsync(
-                    $"{Context.Message.Author.Mention} This message isn't contain image!");
-                return;
-            }
-            
-            var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url).Result;
-            await Context.Channel.SendMessageAsync($"```{text}```");
-        }
-        
-        [Command("languages")]
-        [Description("Returns all languages supported to read text")]
-        public async Task Languages()
-        {
-            if (_tessdataPath.Equals("tessdata"))
-            {
-                await Context.Channel.SendMessageAsync("eng - English");
-                return;
-            }
-
-            var languages = await new TessDataLanguages().GetTessDataLanguages();
-
-            await Context.Channel.SendMessageAsync("```" +
-                languages.Aggregate("", (current, tessLanguage) => current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n") +
-                "```");
+            await SendTextFile(readArguments.File,
+                Context.Message.Attachments.Count != 0,
+                string.IsNullOrEmpty(readArguments.Lang) ? "eng" : readArguments.Lang,
+                readArguments.Url
+            );
+            return;
         }
 
-        [Command("help")]
-        public async Task Help()
-            => await Context.Channel.SendMessageAsync($"{GithubUrl}/blob/main/README.md");
-
-        [Command("about")]
-        public async Task About()
+        if (!string.IsNullOrEmpty(readArguments.Url))
         {
-            var builder = new EmbedBuilder()
-                .WithTitle("About")
-                .AddField("Version", typeof(Ocr).Assembly.GetName().Version)
-                .AddField("Author", "MRmlik12")
-                .AddField("Github", GithubUrl)
-                .WithFooter($"Requested Date: {DateTime.UtcNow}")
-                .Build();
-            
-            await Context.Channel.SendMessageAsync(embed: builder);
+            await Context.Channel.SendMessageAsync($"```{GetTextFromImage(readArguments.Url, readArguments.Lang)}```");
+            return;
         }
 
-        private async Task<string> GetTextFromImage(string imageUrl, string lang = "eng")
+        if (Context.Message.Attachments.Count == 0)
         {
-            var downloadedData = await _webClient.DownloadDataTaskAsync(imageUrl);
-            var text = _ocr.GetText(downloadedData, lang, _tessdataPath);
-            return text;
+            await Context.Channel.SendMessageAsync(
+                $"{Context.Message.Author.Mention} This message isn't contain image!");
+            return;
         }
 
-        private async Task SendTextFile(string filename, bool isAttachment, string lang, string url)
+        var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, readArguments.Lang).Result;
+        await Context.Channel.SendMessageAsync($"```{text}```");
+    }
+
+    [Command("read")]
+    [Description("Reads text from image and returns all colleted data")]
+    public async Task Read()
+    {
+        if (Context.Message.Attachments.Count == 0)
         {
-            var stream = ReadTextMemoryStream.GetReadTextMemoryStream(isAttachment ? 
-                GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, lang).Result : GetTextFromImage(url, lang).Result);
-            await Context.Channel.SendFileAsync(stream, $"{filename}.txt");
-            await stream.DisposeAsync();
+            await Context.Channel.SendMessageAsync(
+                $"{Context.Message.Author.Mention} This message isn't contain image!");
+            return;
         }
 
-        private string GetTesseractDataPath()
-            => Directory.Exists("tessdata-extended") ? "tessdata-extended" : "tessdata";
+        var text = GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url).Result;
+        await Context.Channel.SendMessageAsync($"```{text}```");
+    }
+
+    [Command("languages")]
+    [Description("Returns all languages supported to read text")]
+    public async Task Languages()
+    {
+        if (_tessdataPath.Equals("tessdata"))
+        {
+            await Context.Channel.SendMessageAsync("eng - English");
+            return;
+        }
+
+        var languages = await new TessDataLanguages().GetTessDataLanguages();
+
+        await Context.Channel.SendMessageAsync("```" +
+                                               languages.Aggregate("",
+                                                   (current, tessLanguage) =>
+                                                       current + $"{tessLanguage.LangCode} - {tessLanguage.Lang}\n") +
+                                               "```");
+    }
+
+    [Command("help")]
+    public async Task Help()
+    {
+        await Context.Channel.SendMessageAsync($"{GithubUrl}/blob/main/README.md");
+    }
+
+    [Command("about")]
+    public async Task About()
+    {
+        var builder = new EmbedBuilder()
+            .WithTitle("About")
+            .AddField("Version", typeof(Ocr).Assembly.GetName().Version)
+            .AddField("Author", "MRmlik12")
+            .AddField("Github", GithubUrl)
+            .WithFooter($"Requested Date: {DateTime.UtcNow}")
+            .Build();
+
+        await Context.Channel.SendMessageAsync(embed: builder);
+    }
+
+    private async Task<string> GetTextFromImage(string imageUrl, string lang = "eng")
+    {
+        var downloadedData = await _webClient.DownloadDataTaskAsync(imageUrl);
+        var text = Ocr.GetText(downloadedData, lang, _tessdataPath);
+        return text;
+    }
+
+    private async Task SendTextFile(string filename, bool isAttachment, string lang, string url)
+    {
+        var stream = ReadTextMemoryStream.GetReadTextMemoryStream(isAttachment
+            ? GetTextFromImage(Context.Message.Attachments.ElementAt(0).Url, lang).Result
+            : GetTextFromImage(url, lang).Result);
+        await Context.Channel.SendFileAsync(stream, $"{filename}.txt");
+        await stream.DisposeAsync();
+    }
+
+    private static string GetTesseractDataPath()
+    {
+        return Directory.Exists("tessdata-extended") ? "tessdata-extended" : "tessdata";
     }
 }

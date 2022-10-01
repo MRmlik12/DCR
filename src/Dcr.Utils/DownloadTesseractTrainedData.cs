@@ -3,66 +3,75 @@ using System.Net;
 using Ionic.Zip;
 using Serilog;
 
-namespace Dcr.Utils
+namespace Dcr.Utils;
+
+public class DownloadTesseractTrainedData
 {
-    public class DownloadTesseractTrainedData
+    private const string TessDataUrl = "https://github.com/tesseract-ocr/tessdata/archive/refs/heads/main.zip";
+    private readonly string _fileName;
+
+    public DownloadTesseractTrainedData(string tempPath = "temp.zip")
     {
-        private const string TessDataUrl = "https://github.com/tesseract-ocr/tessdata/archive/refs/heads/main.zip";
-        private readonly string _fileName;
+        _fileName = tempPath;
+    }
 
-        public DownloadTesseractTrainedData(string tempPath = "temp.zip")
-        {
-            _fileName = tempPath;
-        }
+    public void Start()
+    {
+        Log.Information("Start installing tessdata");
 
-        public void Start()
+        if (CheckIfTessDataDirExists())
+            return;
+
+        if (CheckIfTempExists())
         {
-            Log.Information("Start installing tessdata");
-            
-            if (CheckIfTessDataDirExists())
-                return;
-            
-            if (CheckIfTempExists())
-            {
-                ExtractData();
-                RenameToTessdata();
-                DeleteTempFile();
-                return;
-            }
-            
-            DownloadFile();
             ExtractData();
             RenameToTessdata();
             DeleteTempFile();
-            
-            Log.Information("Tessdata was installed successfully");
+            return;
         }
 
-        private bool CheckIfTempExists()
-            => File.Exists(_fileName);
+        DownloadFile();
+        ExtractData();
+        RenameToTessdata();
+        DeleteTempFile();
 
-        private bool CheckIfTessDataDirExists()
-            => Directory.Exists("tessdata-extended");
+        Log.Information("Tessdata was installed successfully");
+    }
 
-        private void RenameToTessdata()
-            => Directory.Move("tessdata-main", "tessdata-extended");
+    private bool CheckIfTempExists()
+    {
+        return File.Exists(_fileName);
+    }
 
-        private void DownloadFile()
-        {
-            Log.Information("Downloading tessdata...");
-            var webClient = new WebClient();
-            webClient.DownloadFile(TessDataUrl, _fileName);
-        }
+    private static bool CheckIfTessDataDirExists()
+    {
+        return Directory.Exists("tessdata-extended");
+    }
 
-        private void DeleteTempFile()
-            => File.Delete(_fileName);
+    private static void RenameToTessdata()
+    {
+        Directory.Move("tessdata-main", "tessdata-extended");
+    }
 
-        private void ExtractData()
-        {
-            Log.Information("Extracting tessdata");
-            
-            using ZipFile zip = ZipFile.Read(_fileName);
-            zip.ExtractAll("./");
-        }
+    private void DownloadFile()
+    {
+        Log.Information("Downloading tessdata...");
+#pragma warning disable SYSLIB0014
+        var webClient = new WebClient();
+#pragma warning restore SYSLIB0014
+        webClient.DownloadFile(TessDataUrl, _fileName);
+    }
+
+    private void DeleteTempFile()
+    {
+        File.Delete(_fileName);
+    }
+
+    private void ExtractData()
+    {
+        Log.Information("Extracting tessdata");
+
+        using var zip = ZipFile.Read(_fileName);
+        zip.ExtractAll("./");
     }
 }

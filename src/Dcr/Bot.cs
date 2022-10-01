@@ -11,40 +11,44 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Exceptions;
 
-namespace Dcr
+namespace Dcr;
+
+public class Bot
 {
-    public class Bot
+    public static IConfiguration GetConfiguration => new ConfigurationBuilder<IConfiguration>()
+        .UseJsonFile("configuration.json")
+        .Build();
+
+    public static async Task Run()
     {
-        public async Task Run()
-        {
-            var provider = GetServices();
+        var provider = GetServices();
 
-            InstallTessData(Environment.GetEnvironmentVariable("INSTALL_TESSDATA") ?? provider.GetRequiredService<IConfiguration>().InstallTesseractData);
+        InstallTessData(Environment.GetEnvironmentVariable("INSTALL_TESSDATA") ??
+                        provider.GetRequiredService<IConfiguration>().InstallTesseractData);
 
-            provider.GetRequiredService<LogService>().Initialize();
-            await provider.GetRequiredService<CommandHandlerService>().Initialize();
-            await provider.GetRequiredService<StartupService>().Initialize();
-        }
+        provider.GetRequiredService<LogService>().Initialize();
+        await provider.GetRequiredService<CommandHandlerService>().Initialize();
+        await provider.GetRequiredService<StartupService>().Initialize();
+    }
 
-        private void InstallTessData(string installTesseractData)
-        { 
-            if (bool.Parse(installTesseractData))
-                new DownloadTesseractTrainedData().Start();
-        }
+    private static void InstallTessData(string installTesseractData)
+    {
+        if (bool.Parse(installTesseractData))
+            new DownloadTesseractTrainedData().Start();
+    }
 
-        public IConfiguration GetConfiguration => new ConfigurationBuilder<IConfiguration>()
-            .UseJsonConfig()
-            .UseJsonFile("configuration.json")
-            .Build();
-        
-        private static ILogger AddLogger()
-            => new LoggerConfiguration()
-                .Enrich.WithExceptionDetails()
-                .WriteTo.Console()
-                .WriteTo.File($"{DateTime.Now:yy-MM-dd}.txt")
-                .CreateLogger();
-        
-        private IServiceProvider GetServices() => new ServiceCollection()
+    private static ILogger AddLogger()
+    {
+        return new LoggerConfiguration()
+            .Enrich.WithExceptionDetails()
+            .WriteTo.Console()
+            .WriteTo.File($"{DateTime.Now:yy-MM-dd}.txt")
+            .CreateLogger();
+    }
+
+    private static IServiceProvider GetServices()
+    {
+        return new ServiceCollection()
             .AddSingleton(AddLogger())
             .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {
