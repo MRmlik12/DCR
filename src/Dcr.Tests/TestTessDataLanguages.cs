@@ -1,23 +1,21 @@
 using Dcr.Utils;
-using Xunit;
 
-namespace Dcr.Tests
+namespace Dcr.Tests;
+
+public class TestTessDataLanguages
 {
-    public class TestTessDataLanguages
+    private readonly TessDataLanguages _tessDataLanguages;
+        
+    public TestTessDataLanguages()
     {
-        private readonly TessDataLanguages _tessDataLanguages;
+        _tessDataLanguages = new TessDataLanguages();
+    }
         
-        public TestTessDataLanguages()
-        {
-            _tessDataLanguages = new TessDataLanguages();
-        }
-        
-        [Fact]
-        public async void TestTessDataLanguage_ChecksIfElementNotEmpty()
-        {
-            var result = await _tessDataLanguages.GetTessDataLanguages();
+    [Fact]
+    public async void TestTessDataLanguage_ChecksIfElementNotEmpty()
+    {
+        var result = await _tessDataLanguages.GetTessDataLanguages();
             
-            Assert.NotEmpty(result);
-        }
+        Assert.NotEmpty(result);
     }
 }

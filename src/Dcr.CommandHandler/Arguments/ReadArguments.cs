@@ -1,12 +1,11 @@
 ﻿using Discord.Commands;
 
-namespace Dcr.CommandHandler.Arguments
+namespace Dcr.CommandHandler.Arguments;
+
+[NamedArgumentType]
+public class ReadArguments
 {
-    [NamedArgumentType]
-    public class ReadArguments
-    {
-        public string Lang { get; set; }
-        public string Url { get; set; }
-        public string File { get; set; }
-    }
+    public string Lang { get; set; }
+    public string Url { get; set; }
+    public string File { get; set; }
 }

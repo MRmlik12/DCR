@@ -1,11 +1,10 @@
 using System.IO;
 using System.Text;
 
-namespace Dcr.Utils
+namespace Dcr.Utils;
+
+public static class ReadTextMemoryStream
 {
-    public static class ReadTextMemoryStream
-    {
-        public static MemoryStream GetReadTextMemoryStream(string readText)
-            => new MemoryStream(Encoding.ASCII.GetBytes(readText));
-    }
+    public static MemoryStream GetReadTextMemoryStream(string readText)
+        => new MemoryStream(Encoding.ASCII.GetBytes(readText));
 }

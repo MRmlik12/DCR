@@ -1,9 +1,8 @@
-namespace Dcr.Config
+namespace Dcr.Config;
+
+public interface IConfiguration
 {
-    public interface IConfiguration
-    {
-        string DiscordToken { get; set; }
-        string InstallTesseractData { get; set; }
-        string Prefix { get; set; }
-    }
+    string DiscordToken { get; set; }
+    string InstallTesseractData { get; set; }
+    string Prefix { get; set; }
 }
