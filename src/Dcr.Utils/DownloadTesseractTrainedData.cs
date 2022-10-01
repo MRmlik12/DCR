@@ -56,7 +56,9 @@ public class DownloadTesseractTrainedData
     private void DownloadFile()
     {
         Log.Information("Downloading tessdata...");
+#pragma warning disable SYSLIB0014
         var webClient = new WebClient();
+#pragma warning restore SYSLIB0014
         webClient.DownloadFile(TessDataUrl, _fileName);
     }
 
