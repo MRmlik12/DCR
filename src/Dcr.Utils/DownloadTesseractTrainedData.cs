@@ -1,5 +1,8 @@
+using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Ionic.Zip;
 using Serilog;
 
@@ -30,8 +33,7 @@ public class DownloadTesseractTrainedData
             return;
         }
 
-        DownloadFile();
-        ExtractData();
+        DownloadFile().GetAwaiter().GetResult();
         RenameToTessdata();
         DeleteTempFile();
 
@@ -53,13 +55,17 @@ public class DownloadTesseractTrainedData
         Directory.Move("tessdata-main", "tessdata-extended");
     }
 
-    private void DownloadFile()
+    private async Task DownloadFile()
     {
         Log.Information("Downloading tessdata...");
-#pragma warning disable SYSLIB0014
-        var webClient = new WebClient();
-#pragma warning restore SYSLIB0014
-        webClient.DownloadFile(TessDataUrl, _fileName);
+
+        using var client = new HttpClient();
+        client.Timeout = TimeSpan.FromMinutes(60.0);
+        var content = await client.GetAsync(TessDataUrl);
+        await using var fileStream = new FileStream(_fileName, FileMode.Create);
+        await fileStream.WriteAsync(await content.Content.ReadAsByteArrayAsync());
+        fileStream.Close();
+        await ExtractData();
     }
 
     private void DeleteTempFile()
@@ -67,7 +73,7 @@ public class DownloadTesseractTrainedData
         File.Delete(_fileName);
     }
 
-    private void ExtractData()
+    private async Task ExtractData()
     {
         Log.Information("Extracting tessdata");
 

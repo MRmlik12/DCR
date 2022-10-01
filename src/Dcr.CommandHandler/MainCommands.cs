@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Dcr.CommandHandler.Arguments;
 using Dcr.Utils;
@@ -15,13 +16,9 @@ public class MainCommands : ModuleBase<SocketCommandContext>
 {
     private const string GithubUrl = "https://github.com/MRmlik12/DCR";
     private readonly string _tessdataPath;
-    private readonly WebClient _webClient;
 
     public MainCommands()
     {
-#pragma warning disable SYSLIB0014
-        _webClient = new WebClient();
-#pragma warning restore SYSLIB0014
         _tessdataPath = GetTesseractDataPath();
     }
 
@@ -120,8 +117,10 @@ public class MainCommands : ModuleBase<SocketCommandContext>
 
     private async Task<string> GetTextFromImage(string imageUrl, string lang = "eng")
     {
-        var downloadedData = await _webClient.DownloadDataTaskAsync(imageUrl);
-        var text = Ocr.GetText(downloadedData, lang, _tessdataPath);
+        using var client = new HttpClient();
+        var content = await client.GetAsync(imageUrl);
+        var image = await content.Content.ReadAsByteArrayAsync();
+        var text = Ocr.GetText(image, lang, _tessdataPath);
         return text;
     }
 
