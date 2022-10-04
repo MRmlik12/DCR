@@ -62,9 +62,9 @@ public class DownloadTesseractTrainedData
         using var client = new HttpClient();
         client.Timeout = TimeSpan.FromMinutes(60.0);
         var content = await client.GetAsync(TessDataUrl);
-        await using var fileStream = new FileStream(_fileName, FileMode.Create);
-        await fileStream.WriteAsync(await content.Content.ReadAsByteArrayAsync());
-        fileStream.Close();
+        var file = File.Create(_fileName);
+        file.Close();
+        await File.WriteAllBytesAsync(_fileName, await content.Content.ReadAsByteArrayAsync());
         await ExtractData();
     }
 
